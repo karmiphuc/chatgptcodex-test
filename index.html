@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grid Pop Game</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: "Segoe UI", Roboto, system-ui, -apple-system, sans-serif;
+      --bg: #101623;
+      --surface: #192233;
+      --accent: #4f9bff;
+      --accent-soft: rgba(79, 155, 255, 0.25);
+      --text: #f6fbff;
+      --text-muted: rgba(246, 251, 255, 0.65);
+      --success: #52d273;
+      --danger: #ff6b6b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at center, rgba(79, 155, 255, 0.1), transparent 65%), var(--bg);
+      color: var(--text);
+    }
+
+    main {
+      width: min(960px, 90vw);
+      display: grid;
+      gap: 1.5rem;
+      padding: 2.4rem clamp(1.5rem, 3vw, 3rem);
+      background: var(--surface);
+      border-radius: 28px;
+      box-shadow: 0 32px 80px rgba(12, 20, 30, 0.45);
+    }
+
+    header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 2.8rem);
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      margin: 0;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .dashboard {
+      display: flex;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .panel {
+      flex: 1;
+      min-width: 180px;
+      padding: 1rem 1.5rem;
+      background: rgba(10, 16, 28, 0.65);
+      border: 1px solid rgba(79, 155, 255, 0.12);
+      border-radius: 18px;
+      display: grid;
+      gap: 0.4rem;
+    }
+
+    .panel label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .panel strong {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .panel.is-danger {
+      border-color: rgba(255, 107, 107, 0.35);
+    }
+
+    .panel.is-success {
+      border-color: rgba(82, 210, 115, 0.35);
+    }
+
+    .game-area {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(120px, 1fr));
+      gap: clamp(0.8rem, 2vw, 1.25rem);
+    }
+
+    .cell {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 24px;
+      overflow: hidden;
+      background: linear-gradient(160deg, rgba(79, 155, 255, 0.25), rgba(10, 16, 28, 0.75));
+      border: 1px solid rgba(79, 155, 255, 0.15);
+      transition: transform 140ms ease, border-color 120ms ease;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .cell:active {
+      transform: scale(0.96);
+    }
+
+    .cell .orb {
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.9), rgba(79, 155, 255, 0.9) 45%, rgba(33, 69, 120, 1));
+      opacity: 0;
+      transition: all 160ms ease;
+      box-shadow: 0 18px 32px rgba(79, 155, 255, 0.45);
+    }
+
+    .cell.is-active {
+      border-color: rgba(79, 155, 255, 0.55);
+      transform: translateY(-6px);
+      box-shadow: 0 18px 28px rgba(12, 20, 30, 0.65);
+    }
+
+    .cell.is-active .orb {
+      width: 72%;
+      height: 72%;
+      opacity: 1;
+    }
+
+    .cell.is-hit {
+      border-color: rgba(82, 210, 115, 0.75);
+      animation: pulse 280ms ease;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: translateY(-6px) scale(1);
+      }
+      50% {
+        transform: translateY(-6px) scale(1.05);
+      }
+    }
+
+    #start-btn {
+      appearance: none;
+      border: none;
+      padding: 0.95rem clamp(1.5rem, 3vw, 2rem);
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      background: linear-gradient(135deg, rgba(79, 155, 255, 1), rgba(119, 195, 255, 1));
+      color: #061120;
+      cursor: pointer;
+      transition: transform 140ms ease, box-shadow 160ms ease;
+      align-self: start;
+      box-shadow: 0 18px 36px rgba(79, 155, 255, 0.4);
+    }
+
+    #start-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 28px 48px rgba(79, 155, 255, 0.6);
+    }
+
+    #start-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 12px 28px rgba(79, 155, 255, 0.45);
+    }
+
+    footer {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    footer strong {
+      color: var(--text);
+    }
+
+    @media (max-width: 640px) {
+      main {
+        padding: 1.75rem;
+      }
+
+      #grid {
+        grid-template-columns: repeat(3, minmax(80px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Grid Pop</h1>
+      <p>Tap the glowing orb as soon as it appears. Each hit earns a point. Miss it, and the orb vanishes.
+        You have 30 seconds to set a high score.</p>
+    </header>
+
+    <section class="dashboard">
+      <div class="panel">
+        <label>Score</label>
+        <strong id="score">0</strong>
+      </div>
+      <div class="panel">
+        <label>High Score</label>
+        <strong id="best-score">0</strong>
+      </div>
+      <div class="panel is-danger">
+        <label>Misses</label>
+        <strong id="misses">0</strong>
+      </div>
+      <div class="panel is-success">
+        <label>Timer</label>
+        <strong id="timer">30</strong>
+      </div>
+    </section>
+
+    <section class="game-area">
+      <div id="grid" aria-live="polite"></div>
+      <button id="start-btn" type="button">Start Game</button>
+    </section>
+
+    <footer>
+      <span><strong>How to play:</strong> Hit the orb as soon as you see it. Faster reaction grants more points.</span>
+      <span>Grid Pop adjusts the pop-up speed as you score higher.</span>
+    </footer>
+  </main>
+
+  <script>
+    const grid = document.getElementById("grid");
+    const scoreEl = document.getElementById("score");
+    const bestScoreEl = document.getElementById("best-score");
+    const missesEl = document.getElementById("misses");
+    const timerEl = document.getElementById("timer");
+    const startBtn = document.getElementById("start-btn");
+
+    const GRID_SIZE = 9;
+    const GAME_DURATION = 30;
+
+    let score = 0;
+    let misses = 0;
+    let timeLeft = GAME_DURATION;
+    let gameActive = false;
+    let moleTimeoutId = null;
+    let timerIntervalId = null;
+    let currentCell = null;
+    let bestScore = Number(localStorage.getItem("grid-pop-best-score")) || 0;
+
+    bestScoreEl.textContent = bestScore;
+
+    function createGrid() {
+      const frag = document.createDocumentFragment();
+      for (let i = 0; i < GRID_SIZE; i += 1) {
+        const cell = document.createElement("button");
+        cell.className = "cell";
+        cell.type = "button";
+        cell.setAttribute("aria-label", "Grid cell");
+
+        const orb = document.createElement("div");
+        orb.className = "orb";
+        cell.appendChild(orb);
+
+        cell.addEventListener("pointerdown", () => handleHit(cell));
+        frag.appendChild(cell);
+      }
+      grid.appendChild(frag);
+    }
+
+    function pickRandomCell(exclude) {
+      const cells = Array.from(grid.children).filter((cell) => cell !== exclude);
+      const index = Math.floor(Math.random() * cells.length);
+      return cells[index];
+    }
+
+    function activateCell() {
+      if (!gameActive) return;
+
+      if (currentCell) {
+        misses += 1;
+        missesEl.textContent = misses;
+        currentCell.classList.remove("is-active");
+      }
+
+      currentCell = pickRandomCell(currentCell);
+      currentCell.classList.add("is-active");
+
+      const baseDelay = Math.max(400, 1100 - score * 40);
+      const variability = Math.random() * 350;
+      const nextDelay = baseDelay + variability;
+
+      moleTimeoutId = window.setTimeout(() => {
+        if (gameActive) {
+          currentCell.classList.remove("is-active");
+          currentCell = null;
+          activateCell();
+        }
+      }, nextDelay);
+    }
+
+    function handleHit(cell) {
+      if (!gameActive || cell !== currentCell) {
+        return;
+      }
+
+      score += 1;
+      scoreEl.textContent = score;
+      cell.classList.add("is-hit");
+      window.setTimeout(() => cell.classList.remove("is-hit"), 240);
+
+      cell.classList.remove("is-active");
+      currentCell = null;
+      window.clearTimeout(moleTimeoutId);
+      activateCell();
+    }
+
+    function updateBestScore() {
+      if (score > bestScore) {
+        bestScore = score;
+        bestScoreEl.textContent = bestScore;
+        localStorage.setItem("grid-pop-best-score", String(bestScore));
+      }
+    }
+
+    function resetUI() {
+      score = 0;
+      misses = 0;
+      timeLeft = GAME_DURATION;
+      scoreEl.textContent = "0";
+      missesEl.textContent = "0";
+      timerEl.textContent = String(GAME_DURATION);
+      Array.from(grid.children).forEach((cell) => cell.classList.remove("is-active", "is-hit"));
+      currentCell = null;
+    }
+
+    function stopGame(reason) {
+      gameActive = false;
+      window.clearTimeout(moleTimeoutId);
+      window.clearInterval(timerIntervalId);
+      updateBestScore();
+      if (reason === "time") {
+        startBtn.textContent = "Play Again";
+      } else {
+        startBtn.textContent = "Start Game";
+      }
+    }
+
+    function startGame() {
+      if (gameActive) return;
+      resetUI();
+      gameActive = true;
+      startBtn.textContent = "Playing...";
+      startBtn.blur();
+
+      timerIntervalId = window.setInterval(() => {
+        timeLeft -= 1;
+        timerEl.textContent = String(timeLeft);
+        if (timeLeft <= 0) {
+          stopGame("time");
+        }
+      }, 1000);
+
+      activateCell();
+    }
+
+    startBtn.addEventListener("click", startGame);
+    window.addEventListener("keydown", (event) => {
+      if (event.key.toLowerCase() === " " && !gameActive) {
+        startGame();
+      }
+    });
+
+    createGrid();
+  </script>
+</body>
+</html>
