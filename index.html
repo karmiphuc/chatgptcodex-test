@@ -11,15 +11,26 @@
     <div class="modal">
       <h1>🎲 Đoán Từ Gia Đình</h1>
       <p>Mặc định là <b>Random Mix</b>: trộn tất cả chủ đề, mỗi lượt tự xáo bài và tránh lặp lại thẻ vừa chơi.</p>
-      <div class="rules"><ol><li>Một người quay lưng lại với TV.</li><li>Cả đội nhìn màn hình và đưa gợi ý.</li><li>Không được nói chính xác từ trên màn hình.</li><li>90 giây mỗi lượt. Đúng thì +1, khó quá thì bỏ qua.</li></ol></div>
-      <div class="setup"><select id="packIntro"></select><button class="primary" id="startBtn">Bắt đầu ngay</button></div>
+      <div class="rules">
+        <ol>
+          <li>Một người quay lưng lại với TV.</li>
+          <li>Cả đội nhìn màn hình và đưa gợi ý.</li>
+          <li>Không được nói chính xác từ trên màn hình.</li>
+          <li>90 giây mỗi lượt. Đúng thì +1, khó quá thì bỏ qua.</li>
+        </ol>
+      </div>
+      <div class="setup">
+        <select id="packIntro" aria-label="Chọn bộ thẻ"></select>
+        <button class="primary" id="startBtn">Bắt đầu ngay</button>
+      </div>
+      <p class="fallback hidden" id="loadError">Không tải được bộ thẻ. Hãy refresh lại trang.</p>
     </div>
   </div>
   <div class="flash" id="flash"></div>
   <div class="screen">
-    <div class="top"><div class="brand">🎉 ĐOÁN TỪ GIA ĐÌNH</div><div class="status"><div class="badge" id="packBadge">🎲 Random Mix</div><div class="badge" id="deckBadge">0 thẻ</div><div class="badge" id="roundScore">Lượt này: 0</div><div class="timer" id="timer">90</div></div></div>
-    <main class="stage"><section class="card" id="card"><div class="cardTop"><div class="category" id="catPill"><span id="emoji">🎲</span><span id="category">Random Mix</span></div><div class="count" id="counter">1 / 0</div></div><div class="word" id="word">Sẵn sàng?</div><div class="rule">Người đoán không nhìn TV • Cả đội chỉ được nói gợi ý</div></section></main>
-    <footer class="controller"><div class="team"><span class="teamName">Đội A</span><button class="correct" data-team="A">Đúng +1</button><span class="score" id="scoreA">0</span></div><div class="controls"><button id="timerBtn">▶ 90s</button><button class="pass" id="passBtn">Bỏ qua</button><button class="primary" id="nextBtn">Thẻ tiếp</button><button class="ghost" id="newRoundBtn">Lượt mới</button><select id="packSelect"></select></div><div class="team"><span class="score" id="scoreB">0</span><button class="correct" data-team="B">Đúng +1</button><span class="teamName">Đội B</span></div></footer>
+    <div class="top"><div class="brand">🎉 ĐOÁN TỪ GIA ĐÌNH</div><div class="status"><div class="badge" id="packBadge">🎲 Random Mix</div><div class="badge" id="roundScore">Lượt này: 0</div><div class="timer" id="timer">90</div></div></div>
+    <main class="stage"><section class="card" id="card"><div class="cardTop"><div class="category" id="catPill"><span id="emoji">🎲</span><span id="category">Random Mix</span></div><div class="count" id="counter">0 / 0</div></div><div class="word" id="word">Đang tải...</div><div class="rule">Người đoán không nhìn TV • Cả đội chỉ được nói gợi ý</div></section></main>
+    <footer class="controller"><div class="team"><span class="teamName">Đội A</span><button class="correct" data-team="A">Đúng +1</button><span class="score" id="scoreA">0</span></div><div class="controls"><button id="timerBtn">▶ 90s</button><button class="pass" id="passBtn">Bỏ qua</button><button class="primary" id="nextBtn">Thẻ tiếp</button><button class="ghost" id="newRoundBtn">Lượt mới</button><select id="packSelect" aria-label="Chọn bộ thẻ"></select></div><div class="team"><span class="score" id="scoreB">0</span><button class="correct" data-team="B">Đúng +1</button><span class="teamName">Đội B</span></div></footer>
   </div>
   <script src="app.js"></script>
 </body>
